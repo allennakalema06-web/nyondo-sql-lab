@@ -180,3 +180,5 @@ Query G:
 (4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0)
 (5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)
 
+screenshots/task2.png
+screenshots/task-2.png
