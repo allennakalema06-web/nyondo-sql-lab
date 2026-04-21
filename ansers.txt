@@ -54,3 +54,129 @@ The output from SELECT * showing all 5 products
 Screenshot of the terminal showing SELECT output
 screenshots/Task1.png
 
+#TASK 2
+# Each SQL query I wrote (labelled A through G)
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+# Query A: Get every column of every product
+conn.execute('''
+SELECT *
+FROM products;
+''')
+print("\nQuery A:")
+rows = conn.execute("SELECT * FROM products;").fetchall()
+for r in rows:
+    print(r)
+
+# Query B: Get only the name and price of all products
+conn.execute('''
+SELECT name, price
+FROM products;  
+                        
+''')
+print("\nQuery B:")
+rows = conn.execute("SELECT name, price FROM products;").fetchall()
+for r in rows:
+    print(r)
+#  Query C: Get full details of the product with id = 3
+conn.execute('''
+SELECT *
+FROM products
+WHERE id = 3;               
+                        
+''')
+print("\nQuery C:")
+rows = conn.execute("SELECT * FROM products WHERE id = 3;").fetchall()
+for r in rows:
+    print(r)
+
+# Query D: Find all products whose name contains 'sheet' - use a partial match
+conn.execute('''
+SELECT *
+FROM products  
+WHERE name LIKE '%sheet%';             
+                        
+''')
+print("\nQuery D:")
+rows = conn.execute("SELECT * FROM products WHERE name LIKE '%sheet%';").fetchall()
+for r in rows:
+    print(r)
+
+# Query E: Get all products sorted by price, highest first
+conn.execute('''
+SELECT *
+FROM products  
+ORDER BY price DESC;             
+                        
+''')
+print("\nQuery E:")
+rows = conn.execute("SELECT * FROM products ORDER BY price DESC;").fetchall()
+for r in rows:
+    print(r)
+# Query F: Get only the 2 most expensive products
+conn.execute('''
+SELECT name, price
+FROM products  
+ORDER BY price DESC
+LIMIT 2;                       
+                        
+''')
+print("\nQuery F:")
+rows = conn.execute("SELECT name, price FROM products ORDER BY price DESC LIMIT 2;").fetchall()
+for r in rows:
+    print(r)
+
+# Query G: Update the price of Cement (id=1) to 38,000 then SELECT * to confirm
+conn.execute('''
+UPDATE products
+SET price = 38000
+WHERE id = 1;                                             
+                        
+''')
+conn.commit()
+
+print("\nQuery G:")
+rows = conn.execute("SELECT * FROM products;").fetchall()
+for r in rows:
+    print(r)
+
+
+# This is the output from each query
+Query A:
+(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0)
+(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0)
+(3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0)
+(4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0)
+(5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)
+
+Query B:
+('Cement (bag)', 38000.0)
+('Iron Sheet 3m', 110000.0)
+('Paint 5L', 60000.0)
+('Nails 1kg', 12000.0)
+('Timber 2x4', 25000.0)
+
+Query C:
+(3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0)
+
+Query D:
+(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0)
+
+Query E:
+(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0)
+(3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0)
+(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0)
+(5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)
+(4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0)
+
+Query F:
+('Iron Sheet 3m', 110000.0)
+('Paint 5L', 60000.0)
+
+Query G:
+(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0)
+(2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0)
+(3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0)
+(4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0)
+(5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)
+
