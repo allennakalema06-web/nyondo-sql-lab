@@ -303,4 +303,72 @@ Using `?` placeholders prevents SQL injection because the database treats user i
 
 screenshots/task4.png
 
+Task 5
 
+The updated secure.py with validation added
+
+import re
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+
+# TODO: rewrite using ? placeholder - never use f-strings in SQL
+def search_product_safe(name):
+    # your code here
+    if not name.strip():
+        return "Rejected: empty search"
+    
+    if "<" in name or ">" in name:
+        return "Rejected: invalid characters"
+    query = "SELECT * FROM products WHERE name LIKE ?"
+    rows = conn.execute(query, (f"%{name}%",)).fetchall()
+    return rows
+
+
+def login_safe(username, password):
+    # your code here
+    if not username or not password:
+        return "Rejected: empty fields"
+    
+    if " " in username:
+        return "Rejected: username contains spaces"
+    
+    if len(password) < 4:
+        return "Rejected: password too short"
+    
+    if not re.match("^[a-zA-Z0-9]+$", username):
+        return "Rejected: invalid username format"
+    query = "SELECT * FROM users WHERE username = ? AND password = ?"
+    print(f'Query (safe): {query}')
+    print(f'Parameters: ({username}, {password})')
+    row = conn.execute(query, (username, password)).fetchone()
+    print(f'Result: {row}\n')
+    return row
+
+# These must ALL return [] or None when you run them
+print('Test 1:', search_product_safe("' OR 1=1--"))
+print('Test 2:', search_product_safe("' UNION SELECT id,username,password,role FROM users--"))
+print('Test 3:', login_safe("admin'--", 'anything'))
+print('Test 4:', login_safe("' OR '1'='1", "' OR '1'='1"))
+
+
+print('Test 5:', search_product_safe('cement')) #-> works normally
+print('Test 6:', search_product_safe('')) #-> rejected
+print('Test 7:', search_product_safe('<script>')) #-> rejected 
+print('Test 8:', login_safe('admin', 'admin123')) #-> works 
+print('Test 9:', login_safe('admin','ab')) #-> rejected (too short)
+print('Test 10:', login_safe('ad min', 'pass123')) #-> rejected (space in username)
+
+The output for each of the 6 test cases above
+
+Test 5: [(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0), (6, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (11, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0), (16, 'Cement (bag)', 'Portland cement 50kg bag', 35000.0)]
+Test 6: Rejected: empty search
+Test 7: Rejected: invalid characters
+Query (safe): SELECT * FROM users WHERE username = ? AND password = ?
+Parameters: (admin, admin123)
+Result: (1, 'admin', 'admin123', 'admin')
+
+Test 8: (1, 'admin', 'admin123', 'admin')
+Test 9: Rejected: password too short
+Test 10: Rejected: username contains spaces
+
+screenshots/task5.png
