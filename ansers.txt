@@ -237,5 +237,15 @@ WHERE username='' OR '1'='1'
 AND password='' OR '1'='1')
 that always evaluate to true, making the WHERE clause always true and bypassing authentication.
 
-FOR
+FOR the fourth attack: search_product("' UNION SELECT id, username, password, role FROM users--") 
+When we inject ("' UNION SELECT id, username, password, role FROM users--") in our code, The query becomes SELECT * FROM products 
+WHERE name LIKE '%' 
+UNION 
+SELECT id, username, password, role FROM users--%'
+and the % returns all products, the UNION combines results from two queries the product query and the users table query so the database merges the product rows and user rows and thus sensitive data is exposed.
+
+screenshots/task3-attack1.png
+screenshots/task3-attack2.png
+screenshots/task3-attack3.png
+screenshots/task3-attack4.png
 
