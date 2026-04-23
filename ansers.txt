@@ -249,3 +249,58 @@ screenshots/task3-attack2.png
 screenshots/task3-attack3.png
 screenshots/task3-attack4.png
 
+
+Task 4
+
+
+full secure.py code
+
+import sqlite3
+conn = sqlite3.connect('nyondo_stock.db')
+
+# TODO: rewrite using ? placeholder - never use f-strings in SQL
+def search_product_safe(name):
+# your code here
+    query = "SELECT * FROM products WHERE name LIKE ?"
+    rows = conn.execute(query, (f"%{name}%",)).fetchall()
+    return rows
+
+
+def login_safe(username, password):
+# your code here
+    query = "SELECT * FROM users WHERE username = ? AND password = ?"
+    print(f'Query (safe): {query}')
+    print(f'Parameters: ({username}, {password})')
+    row = conn.execute(query, (username, password)).fetchone()
+    print(f'Result: {row}\n')
+    return row
+
+# These must ALL return [] or None when you run them
+print('Test 1:', search_product_safe("' OR 1=1--"))
+print('Test 2:', search_product_safe("' UNION SELECT id,username,password,role FROM users--"))
+print('Test 3:', login_safe("admin'--", 'anything'))
+print('Test 4:', login_safe("' OR '1'='1", "' OR '1'='1"))
+
+
+Results after excecution
+
+Test 1: []
+Test 2: []
+Query (safe): SELECT * FROM users WHERE username = ? AND password = ?
+Parameters: (admin'--, anything)
+Result: None
+
+Test 3: None
+Query (safe): SELECT * FROM users WHERE username = ? AND password = ?
+Parameters: (' OR '1'='1, ' OR '1'='1)
+Result: None
+
+Test 4: None
+
+Explanation why does using ? prevent injection and the difference between an f-string and a parametized query at the database level.
+
+Using `?` placeholders prevents SQL injection because the database treats user input strictly as **data**, and not as part of the SQL command. So when a parameterized query is executed, the SQL statement is prepared first, and the values are sent separately, so special characters like `'`, `--`, or `OR` cannot change the query’s logic. Whereas , an f-string directly inserts user input into the SQL text before it is sent to the database, allowing attackers to modify the structure of the query. At the database level, parameterized queries separate the query plan from the data, while f-strings combine them into one executable string. This separation is what makes parameterized queries secure against injection attacks.
+
+screenshots/task4.png
+
+
