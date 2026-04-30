@@ -229,7 +229,7 @@ when we inject the "' OR 1=1 --" in the code and then our actual query becomes (
 
 For the second attack: login("admin'--", "anything")
 when we inject ("admin'--", "anything") in the code our actual query becomes SELECT * FROM users WHERE username='admin'--' AND password='anything'
-so it reads admin as the valid username and -- comments out everything and the rest is ignored and anyone or the admin can login without inputing the password.
+so it reads admin as the valid username and -- comments out everything and the rest is ignored and anyone or the admin can login without inputing the password. protect your system
 
 For the third attack: login("' OR '1'='1", "' OR '1'='1")
 when we inject ("' OR '1'='1", "' OR '1'='1") in our code, our actual query becomes (SELECT * FROM users 
