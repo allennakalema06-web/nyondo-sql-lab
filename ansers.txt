@@ -222,7 +222,7 @@ Result: [(1, 'Cement (bag)', 'Portland cement 50kg bag', 38000.0), (1, 'admin', 
 
 All the attacks work because our functions were written using f-strings eg. query = f"SELECT * FROM products WHERE name LIKE '%{name}%'"
 and query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
-So this means user input is inserted directly into SQL and whatever the user types becomes part of the query itself
+So this means user input is inserted directly into SQL and whatever the user types becomes part of the query itself.
 
 For the first attack: search_product("' OR 1=1--")
 when we inject the "' OR 1=1 --" in the code and then our actual query becomes (SELECT * FROM products WHERE name LIKE '%' OR 1=1--%') so (' OR 1=1 --) replaces the name and ' OR 1=1 is read as true always and -- comments out the rest of the query, %' is ignored so the database return all records.
